@@ -4,6 +4,52 @@
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 	let loading = $state(false);
+	let countdown = $state('');
+
+	function formatCountdown(dueAt: string): string {
+		const diff = new Date(dueAt).getTime() - Date.now();
+		if (diff <= 0) return 'Overdue';
+		const days = Math.floor(diff / 86400000);
+		const hours = Math.floor((diff % 86400000) / 3600000);
+		const minutes = Math.floor((diff % 3600000) / 60000);
+		const seconds = Math.floor((diff % 60000) / 1000);
+		if (days > 0) return `${days}d ${hours}h ${minutes}m`;
+		if (hours > 0) return `${hours}h ${minutes}m ${seconds}s`;
+		return `${minutes}m ${seconds}s`;
+	}
+
+	let isOnHold = $derived(data.ticket.status === 'on-hold');
+
+	$effect(() => {
+		const dueAt = data.ticket.due_at;
+		if (!dueAt || isOnHold) return;
+		countdown = formatCountdown(dueAt);
+		const timer = setInterval(() => {
+			countdown = formatCountdown(dueAt);
+		}, 1000);
+		return () => clearInterval(timer);
+	});
+	let loadingMore = $state(false);
+	let extraMessages = $state<any[]>([]);
+	let extraPagesLoaded = $state(0);
+
+	let allMessages = $derived([...extraMessages, ...data.messages]);
+	let nextPage = $derived((data.messagesMeta?.current_page ?? 1) + 1 + extraPagesLoaded);
+	let hasMore = $derived(nextPage <= (data.messagesMeta?.last_page ?? 1));
+
+	async function loadMore() {
+		loadingMore = true;
+		const res = await fetch(`?page=${nextPage}`, {
+			headers: { Accept: 'application/json' }
+		});
+		const result = await res.json();
+		extraMessages = [...result.messages, ...extraMessages];
+		extraPagesLoaded++;
+		loadingMore = false;
+	}
+
+	const priorities = ['low', 'medium', 'high', 'urgent'] as const;
+	const statuses = ['open', 'on-hold', 'resolved', 'archived'] as const;
 
 	const priorityColors: Record<string, string> = {
 		low: 'bg-gray-100 text-gray-700',
@@ -33,23 +79,37 @@
 		<div class="flex flex-wrap gap-6">
 			<div>
 				<div class="mb-1 text-xs uppercase text-gray-400">Priority</div>
-				<span
-					class="inline-block rounded-full px-2 py-0.5 text-xs font-medium {priorityColors[
-						data.ticket.priority
-					] ?? ''}"
-				>
-					{data.ticket.priority}
-				</span>
+				<form method="POST" action="?/priority" use:enhance>
+					<select
+						name="priority"
+						onchange={(e) => e.currentTarget.form?.requestSubmit()}
+						class="rounded-full border-0 py-0.5 pr-7 pl-2 text-xs font-medium {priorityColors[
+							data.ticket.priority
+						] ?? ''}"
+						style="width: auto; background-position: right 0.3rem center; background-size: 0.8em; padding-right: 1.4rem;"
+					>
+						{#each priorities as p}
+							<option value={p} selected={data.ticket.priority === p}>{p}</option>
+						{/each}
+					</select>
+				</form>
 			</div>
 			<div>
 				<div class="mb-1 text-xs uppercase text-gray-400">Status</div>
-				<span
-					class="inline-block rounded-full px-2 py-0.5 text-xs font-medium {statusColors[
-						data.ticket.status
-					] ?? ''}"
-				>
-					{data.ticket.status}
-				</span>
+				<form method="POST" action="?/status" use:enhance>
+					<select
+						name="status"
+						onchange={(e) => e.currentTarget.form?.requestSubmit()}
+						class="rounded-full border-0 py-0.5 pr-7 pl-2 text-xs font-medium {statusColors[
+							data.ticket.status
+						] ?? ''}"
+						style="width: auto; background-position: right 0.3rem center; background-size: 0.8em; padding-right: 1.4rem;"
+					>
+						{#each statuses as s}
+							<option value={s} selected={data.ticket.status === s}>{s}</option>
+						{/each}
+					</select>
+				</form>
 			</div>
 			<div>
 				<div class="mb-1 text-xs uppercase text-gray-400">Created</div>
@@ -64,9 +124,27 @@
 						{new Date(data.ticket.due_at).toLocaleString()}
 					</div>
 				</div>
+				<div>
+					<div class="mb-1 text-xs uppercase text-gray-400">Time Left</div>
+					{#if isOnHold}
+						<div class="text-sm font-medium text-yellow-600">Paused</div>
+					{:else}
+						<div
+							class="text-sm font-medium {countdown === 'Overdue'
+								? 'text-red-600'
+								: 'text-gray-700'}"
+						>
+							{countdown}
+						</div>
+					{/if}
+				</div>
+			{/if}
+			{#if isOnHold}
+				<div class="flex w-full items-center gap-2 rounded-md bg-yellow-50 px-3 py-2 text-xs text-yellow-700">
+					SLA clock is paused while ticket is on hold.
+				</div>
 			{/if}
 		</div>
-		<p class="mt-4 text-sm text-gray-600">{data.ticket.description}</p>
 	</div>
 
 	<!-- Messages -->
@@ -76,10 +154,22 @@
 		</div>
 
 		<div class="p-6">
-			{#if data.messages.length === 0}
+			{#if allMessages.length === 0}
 				<p class="text-center text-sm text-gray-400">No messages yet.</p>
 			{:else}
-				{#each data.messages as message, i}
+				{#if hasMore}
+					<div class="mb-4 border-b border-gray-100 pb-4 text-center">
+						<button
+							onclick={loadMore}
+							disabled={loadingMore}
+							class="cursor-pointer text-sm font-medium text-blue-600 hover:text-blue-800 disabled:opacity-50"
+						>
+							{loadingMore ? 'Loading...' : 'Load older messages'}
+						</button>
+					</div>
+				{/if}
+
+				{#each allMessages as message, i}
 					<div class="{i > 0 ? 'mt-4 border-t border-gray-100 pt-4' : ''}">
 						<div class="flex items-center gap-2">
 							<span class="text-sm font-medium text-gray-900">
@@ -114,6 +204,8 @@
 					loading = true;
 					return async ({ update }) => {
 						loading = false;
+						extraMessages = [];
+						extraPagesLoaded = 0;
 						await update();
 					};
 				}}
