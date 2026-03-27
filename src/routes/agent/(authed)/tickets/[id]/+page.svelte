@@ -112,6 +112,27 @@
 				</form>
 			</div>
 			<div>
+				<div class="mb-1 text-xs uppercase text-gray-400">Assignee</div>
+				<form method="POST" action="?/assignee" use:enhance>
+					<select
+						name="assignee_id"
+						onchange={(e) => e.currentTarget.form?.requestSubmit()}
+						class="rounded-full border-0 py-0.5 pr-7 pl-2 text-xs font-medium bg-purple-100 text-purple-700"
+						style="width: auto; background-position: right 0.3rem center; background-size: 0.8em; padding-right: 1.4rem;"
+					>
+						<option value="" disabled selected={!data.ticket.assignee_id}>Unassigned</option>
+						{#each data.agents as agent}
+							<option
+								value={agent.user_id}
+								selected={data.ticket.assignee_id === agent.user_id}
+							>
+								{agent.name}
+							</option>
+						{/each}
+					</select>
+				</form>
+			</div>
+			<div>
 				<div class="mb-1 text-xs uppercase text-gray-400">SLA Status</div>
 				<div class="text-sm text-gray-700">{data.ticket.sla_status ?? '-'}</div>
 			</div>
