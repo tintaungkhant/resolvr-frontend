@@ -20,87 +20,85 @@
 	};
 </script>
 
-<div class="space-y-6">
-	<div class="flex items-center gap-3">
-		<a href="/client/tickets" class="text-sm text-gray-500 hover:text-gray-700">&larr; Back</a>
+<div>
+	<div class="mb-4 flex items-center gap-3">
+		<a href="/client/tickets" class="text-sm text-gray-400 no-underline hover:text-gray-600">
+			&larr; Back
+		</a>
 		<h1 class="text-xl font-semibold text-gray-900">#{data.ticket.id} {data.ticket.title}</h1>
 	</div>
 
 	<!-- Ticket Details -->
-	<div class="rounded-lg border border-gray-200 bg-white p-6">
-		<div class="flex flex-wrap gap-4">
+	<div class="mb-6 rounded-lg border border-gray-200 bg-white p-6">
+		<div class="flex flex-wrap gap-6">
 			<div>
-				<span class="text-xs uppercase text-gray-500">Priority</span>
-				<div>
-					<span
-						class="inline-block rounded-full px-2 py-0.5 text-xs font-medium {priorityColors[
-							data.ticket.priority
-						] ?? ''}"
-					>
-						{data.ticket.priority}
-					</span>
-				</div>
+				<div class="mb-1 text-xs uppercase text-gray-400">Priority</div>
+				<span
+					class="inline-block rounded-full px-2 py-0.5 text-xs font-medium {priorityColors[
+						data.ticket.priority
+					] ?? ''}"
+				>
+					{data.ticket.priority}
+				</span>
 			</div>
 			<div>
-				<span class="text-xs uppercase text-gray-500">Status</span>
-				<div>
-					<span
-						class="inline-block rounded-full px-2 py-0.5 text-xs font-medium {statusColors[
-							data.ticket.status
-						] ?? ''}"
-					>
-						{data.ticket.status}
-					</span>
-				</div>
+				<div class="mb-1 text-xs uppercase text-gray-400">Status</div>
+				<span
+					class="inline-block rounded-full px-2 py-0.5 text-xs font-medium {statusColors[
+						data.ticket.status
+					] ?? ''}"
+				>
+					{data.ticket.status}
+				</span>
 			</div>
 			<div>
-				<span class="text-xs uppercase text-gray-500">Created</span>
-				<p class="text-sm text-gray-700">
+				<div class="mb-1 text-xs uppercase text-gray-400">Created</div>
+				<div class="text-sm text-gray-700">
 					{new Date(data.ticket.created_at).toLocaleString()}
-				</p>
+				</div>
 			</div>
 			{#if data.ticket.due_at}
 				<div>
-					<span class="text-xs uppercase text-gray-500">Due</span>
-					<p class="text-sm text-gray-700">
+					<div class="mb-1 text-xs uppercase text-gray-400">Due</div>
+					<div class="text-sm text-gray-700">
 						{new Date(data.ticket.due_at).toLocaleString()}
-					</p>
+					</div>
 				</div>
 			{/if}
 		</div>
-		<p class="mt-4 text-sm text-gray-700">{data.ticket.description}</p>
+		<p class="mt-4 text-sm text-gray-600">{data.ticket.description}</p>
 	</div>
 
 	<!-- Messages -->
 	<div class="rounded-lg border border-gray-200 bg-white">
 		<div class="border-b border-gray-200 px-6 py-3">
-			<h2 class="font-medium text-gray-900">Messages</h2>
+			<h2 class="text-sm font-medium text-gray-900">Messages</h2>
 		</div>
 
-		<div class="divide-y divide-gray-100 p-6">
-			{#each data.messages as message}
-				<div class="py-4 first:pt-0 last:pb-0">
-					<div class="flex items-center gap-2">
-						<span class="text-sm font-medium text-gray-900">
-							{message.user?.name ?? 'Unknown'}
-						</span>
-						<span
-							class="rounded-full px-1.5 py-0.5 text-xs {message.user?.role === 'agent'
-								? 'bg-purple-100 text-purple-700'
-								: 'bg-blue-100 text-blue-700'}"
-						>
-							{message.user?.role ?? 'user'}
-						</span>
-						<span class="text-xs text-gray-400">
-							{new Date(message.created_at).toLocaleString()}
-						</span>
-					</div>
-					<p class="mt-1 text-sm text-gray-700">{message.content}</p>
-				</div>
-			{/each}
-
+		<div class="p-6">
 			{#if data.messages.length === 0}
-				<p class="py-4 text-center text-sm text-gray-500">No messages yet.</p>
+				<p class="text-center text-sm text-gray-400">No messages yet.</p>
+			{:else}
+				{#each data.messages as message, i}
+					<div class="{i > 0 ? 'mt-4 border-t border-gray-100 pt-4' : ''}">
+						<div class="flex items-center gap-2">
+							<span class="text-sm font-medium text-gray-900">
+								{message.user?.name ?? 'Unknown'}
+							</span>
+							<span
+								class="rounded-full px-1.5 py-0.5 text-xs {message.user?.role === 'agent'
+									? 'bg-purple-100 text-purple-700'
+									: 'bg-blue-100 text-blue-700'}"
+							>
+								{message.user?.role ?? 'user'}
+							</span>
+							<span class="text-xs text-gray-400">
+								{new Date(message.created_at).toLocaleString()}
+							</span>
+						</div>
+						<p class="mt-1 text-sm text-gray-600">{message.content}</p>
+					</div>
+				{/each}
 			{/if}
 		</div>
 
@@ -127,12 +125,12 @@
 					required
 					maxlength="3000"
 					placeholder="Type a message..."
-					class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+					class="flex-1"
 				/>
 				<button
 					type="submit"
 					disabled={loading}
-					class="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+					class="shrink-0 rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
 				>
 					Send
 				</button>
