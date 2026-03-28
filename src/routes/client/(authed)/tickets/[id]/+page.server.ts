@@ -37,24 +37,5 @@ export const actions = {
 		if (!result.success) {
 			return fail(422, { error: result.message ?? 'Failed to send message' });
 		}
-	},
-
-	priority: async ({ request, cookies, params }) => {
-		const token = cookies.get('client_token')!;
-		const formData = await request.formData();
-		const priority = formData.get('priority') as string;
-
-		const result = await authenticatedApi(
-			`/api/v1/client/tickets/${params.id}/priority`,
-			token,
-			{
-				method: 'PATCH',
-				body: JSON.stringify({ priority })
-			}
-		);
-
-		if (!result.success) {
-			return fail(422, { error: result.message ?? 'Failed to update priority' });
-		}
 	}
 } satisfies Actions;
