@@ -49,7 +49,6 @@
 	}
 
 	const priorities = ['low', 'medium', 'high', 'urgent'] as const;
-	const statuses = ['open', 'on-hold', 'resolved', 'archived'] as const;
 
 	const priorityColors: Record<string, string> = {
 		low: 'bg-gray-100 text-gray-700',
@@ -96,20 +95,13 @@
 			</div>
 			<div>
 				<div class="mb-1 text-xs uppercase text-gray-400">Status</div>
-				<form method="POST" action="?/status" use:enhance>
-					<select
-						name="status"
-						onchange={(e) => e.currentTarget.form?.requestSubmit()}
-						class="rounded-full border-0 py-0.5 pr-7 pl-2 text-xs font-medium {statusColors[
-							data.ticket.status
-						] ?? ''}"
-						style="width: auto; background-position: right 0.3rem center; background-size: 0.8em; padding-right: 1.4rem;"
-					>
-						{#each statuses as s}
-							<option value={s} selected={data.ticket.status === s}>{s}</option>
-						{/each}
-					</select>
-				</form>
+				<span
+					class="inline-block rounded-full px-2 py-0.5 text-xs font-medium {statusColors[
+						data.ticket.status
+					] ?? ''}"
+				>
+					{data.ticket.status}
+				</span>
 			</div>
 			<div>
 				<div class="mb-1 text-xs uppercase text-gray-400">Created</div>

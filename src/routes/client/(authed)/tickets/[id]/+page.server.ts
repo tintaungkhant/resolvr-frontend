@@ -54,24 +54,5 @@ export const actions = {
 		if (!result.success) {
 			return fail(422, { error: result.message ?? 'Failed to update priority' });
 		}
-	},
-
-	status: async ({ request, cookies, params }) => {
-		const token = cookies.get('client_token')!;
-		const formData = await request.formData();
-		const status = formData.get('status') as string;
-
-		const result = await authenticatedApi(
-			`/api/v1/client/tickets/${params.id}/status`,
-			token,
-			{
-				method: 'PATCH',
-				body: JSON.stringify({ status })
-			}
-		);
-
-		if (!result.success) {
-			return fail(422, { error: result.message ?? 'Failed to update status' });
-		}
 	}
 } satisfies Actions;
