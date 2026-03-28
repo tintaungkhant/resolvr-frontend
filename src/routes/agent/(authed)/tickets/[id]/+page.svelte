@@ -149,6 +149,14 @@
 				</span>
 			</div>
 			<div>
+				<div class="mb-1 text-xs uppercase text-gray-400">Organization</div>
+				<div class="text-sm text-gray-700">{data.ticket.organization?.name ?? '-'}</div>
+			</div>
+			<div>
+				<div class="mb-1 text-xs uppercase text-gray-400">Issuer</div>
+				<div class="text-sm text-gray-700">{data.ticket.issuer?.name ?? '-'}</div>
+			</div>
+			<div>
 				<div class="mb-1 text-xs uppercase text-gray-400">Created</div>
 				<div class="text-sm text-gray-700">
 					{new Date(data.ticket.created_at).toLocaleString()}

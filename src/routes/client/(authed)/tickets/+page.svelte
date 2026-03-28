@@ -206,6 +206,7 @@
 				<tr>
 					<th class="px-4 py-3 font-medium">ID</th>
 					<th class="px-4 py-3 font-medium">Title</th>
+					<th class="px-4 py-3 font-medium">Assignee</th>
 					<th class="px-4 py-3 font-medium">Priority</th>
 					<th class="px-4 py-3 font-medium">Status</th>
 					<th class="px-4 py-3 font-medium">SLA</th>
@@ -223,6 +224,9 @@
 							>
 								{ticket.title}
 							</a>
+						</td>
+						<td class="px-4 py-3 text-sm text-gray-600">
+							{ticket.assignee?.name ?? '-'}
 						</td>
 						<td class="px-4 py-3">
 							<span

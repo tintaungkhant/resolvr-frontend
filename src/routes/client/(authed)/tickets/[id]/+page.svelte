@@ -68,9 +68,7 @@
 		overdue: 'bg-red-100 text-red-700'
 	};
 
-	let assigneeName = $derived(
-		data.agents?.find((a: any) => a.user_id === data.ticket.assignee_id)?.name ?? 'Unassigned'
-	);
+	let assigneeName = $derived(data.ticket.assignee?.name ?? 'Unassigned');
 </script>
 
 <div>
@@ -105,12 +103,6 @@
 				</span>
 			</div>
 			<div>
-				<div class="mb-1 text-xs uppercase text-gray-400">Assignee</div>
-				<span class="inline-block rounded-full bg-purple-100 px-2 py-0.5 text-xs font-medium text-purple-700">
-					{assigneeName}
-				</span>
-			</div>
-			<div>
 				<div class="mb-1 text-xs uppercase text-gray-400">SLA Status</div>
 				<span
 					class="inline-block rounded-full px-2 py-0.5 text-xs font-medium {slaStatusColors[
@@ -119,6 +111,12 @@
 				>
 					{data.ticket.sla_status ?? '-'}
 				</span>
+			</div>
+			<div>
+				<div class="mb-1 text-xs uppercase text-gray-400">Assignee</div>
+				<div class="text-sm text-gray-700">
+					{assigneeName}
+				</div>
 			</div>
 			<div>
 				<div class="mb-1 text-xs uppercase text-gray-400">Created</div>
