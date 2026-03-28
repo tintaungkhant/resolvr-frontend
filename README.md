@@ -1,42 +1,80 @@
-# sv
+# Resolvr Frontend
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+SvelteKit frontend for the Resolvr support ticket portal. Consumes the Laravel API over HTTP.
 
-## Creating a project
+## Tech Stack
 
-If you're seeing this, you've probably already done this step. Congrats!
+- **Framework:** SvelteKit (Svelte 5 with runes)
+- **Styling:** Tailwind CSS v4
+- **Language:** TypeScript
+- **Auth:** Cookie-based (httpOnly cookies storing Sanctum tokens)
 
-```sh
-# create a new project
-npx sv create my-app
-```
+## Setup
 
-To recreate this project with the same configuration:
+```bash
+npm install
 
-```sh
-# recreate this project
-npx sv@0.13.0 create --template minimal --types ts --add tailwindcss="plugins:typography,forms" prettier eslint devtools-json mcp="ide:claude-code,cursor,opencode+setup:local" --install npm resolvr-frontend
-```
+# Configure the API URL
+cp .env.example .env
+# Edit .env and set API_URL to your Laravel backend (e.g. http://resolvr-api.test)
 
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```sh
 npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
 ```
 
-## Building
+## Features
 
-To create a production version of your app:
+### Client Panel (`/client/*`)
 
-```sh
-npm run build
+- **Login** — Email/password authentication
+- **Dashboard** — Welcome page with link to tickets
+- **Ticket List** — View own or organisation-wide tickets with filters (search, priority, status, SLA status, date ranges)
+- **Create Ticket** — Form with title, description, and priority selection
+- **Ticket Detail** — View ticket info (priority, status, SLA status, assignee, countdown timer to deadline), read-only
+- **Messages** — Chat-style conversation thread with "load older messages" pagination, send new messages
+- **SLA Countdown** — Live countdown timer on ticket detail, pauses and shows notice when ticket is on hold
+
+### Agent Panel (`/agent/*`)
+
+- **Login** — Email/password authentication
+- **Dashboard** — Welcome page with link to tickets
+- **Ticket List** — View assigned or all tickets with columns for organisation, assignee, priority, status, SLA status. Advanced filters including organisation filter
+- **Ticket Detail** — View and manage tickets:
+  - Change priority, status, and assignee via inline dropdowns (auto-submit on change)
+  - View organisation name and issuer name
+  - Live SLA countdown timer with on-hold pause
+- **Messages** — Full conversation including internal notes (highlighted in yellow). Send public replies or internal notes via checkbox toggle
+- **Load More** — Paginated message loading (older messages at top)
+
+### Shared
+
+- Persistent nav bar with Dashboard/Tickets links and sign-out
+- SLA status badges (on-track / due-soon / overdue) in both list and detail views
+- Responsive table layouts
+- Progressive enhancement via SvelteKit form actions with `use:enhance`
+
+## Project Structure
+
 ```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+src/
+├── lib/
+│   └── server/api.ts          # Server-side API client (fetch wrapper with auth)
+├── routes/
+│   ├── +page.svelte            # Landing page (portal selection)
+│   ├── client/
+│   │   ├── login/              # Client login
+│   │   ├── logout/             # Client logout (clears cookie)
+│   │   └── (authed)/           # Auth-guarded routes
+│   │       ├── +layout.server.ts   # Verifies token, loads profile
+│   │       ├── +layout.svelte      # Nav bar
+│   │       ├── +page.svelte        # Dashboard
+│   │       └── tickets/            # List, create, detail pages
+│   └── agent/
+│       ├── login/              # Agent login
+│       ├── logout/             # Agent logout
+│       └── (authed)/           # Auth-guarded routes
+│           ├── +layout.server.ts
+│           ├── +layout.svelte
+│           ├── +page.svelte
+│           └── tickets/        # List, detail pages
+└── app.d.ts                    # Type definitions
+```
