@@ -5,15 +5,17 @@ import type { Actions, PageServerLoad } from './$types';
 export const load: PageServerLoad = async ({ cookies, params }) => {
 	const token = cookies.get('client_token')!;
 
-	const [ticketResult, messagesResult] = await Promise.all([
+	const [ticketResult, messagesResult, agentsResult] = await Promise.all([
 		authenticatedApi(`/api/v1/client/tickets/${params.id}`, token),
-		authenticatedApi(`/api/v1/client/tickets/${params.id}/messages`, token)
+		authenticatedApi(`/api/v1/client/tickets/${params.id}/messages`, token),
+		authenticatedApi('/api/v1/client/agents', token)
 	]);
 
 	return {
 		ticket: ticketResult.data,
 		messages: messagesResult.data ?? [],
-		messagesMeta: messagesResult.meta ?? null
+		messagesMeta: messagesResult.meta ?? null,
+		agents: agentsResult.data ?? []
 	};
 };
 

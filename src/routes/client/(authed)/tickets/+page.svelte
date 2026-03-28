@@ -40,6 +40,12 @@
 		resolved: 'bg-gray-100 text-gray-700',
 		archived: 'bg-gray-100 text-gray-500'
 	};
+
+	const slaStatusColors: Record<string, string> = {
+		'on-track': 'bg-green-100 text-green-700',
+		'due-soon': 'bg-yellow-100 text-yellow-700',
+		overdue: 'bg-red-100 text-red-700'
+	};
 </script>
 
 <div class="mb-4 flex items-center justify-between">
@@ -202,6 +208,7 @@
 					<th class="px-4 py-3 font-medium">Title</th>
 					<th class="px-4 py-3 font-medium">Priority</th>
 					<th class="px-4 py-3 font-medium">Status</th>
+					<th class="px-4 py-3 font-medium">SLA</th>
 					<th class="px-4 py-3 font-medium">Created</th>
 				</tr>
 			</thead>
@@ -234,6 +241,19 @@
 							>
 								{ticket.status}
 							</span>
+						</td>
+						<td class="px-4 py-3">
+							{#if ticket.sla_status}
+								<span
+									class="inline-block rounded-full px-2 py-0.5 text-xs font-medium {slaStatusColors[
+										ticket.sla_status
+									] ?? 'bg-gray-100 text-gray-500'}"
+								>
+									{ticket.sla_status}
+								</span>
+							{:else}
+								<span class="text-gray-400">-</span>
+							{/if}
 						</td>
 						<td class="px-4 py-3 text-gray-400">
 							{new Date(ticket.created_at).toLocaleDateString()}

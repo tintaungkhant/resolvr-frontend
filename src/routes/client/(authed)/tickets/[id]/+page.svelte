@@ -63,6 +63,16 @@
 		resolved: 'bg-gray-100 text-gray-700',
 		archived: 'bg-gray-100 text-gray-500'
 	};
+
+	const slaStatusColors: Record<string, string> = {
+		'on-track': 'bg-green-100 text-green-700',
+		'due-soon': 'bg-yellow-100 text-yellow-700',
+		overdue: 'bg-red-100 text-red-700'
+	};
+
+	let assigneeName = $derived(
+		data.agents?.find((a: any) => a.user_id === data.ticket.assignee_id)?.name ?? 'Unassigned'
+	);
 </script>
 
 <div>
@@ -101,6 +111,22 @@
 					] ?? ''}"
 				>
 					{data.ticket.status}
+				</span>
+			</div>
+			<div>
+				<div class="mb-1 text-xs uppercase text-gray-400">Assignee</div>
+				<span class="inline-block rounded-full bg-purple-100 px-2 py-0.5 text-xs font-medium text-purple-700">
+					{assigneeName}
+				</span>
+			</div>
+			<div>
+				<div class="mb-1 text-xs uppercase text-gray-400">SLA Status</div>
+				<span
+					class="inline-block rounded-full px-2 py-0.5 text-xs font-medium {slaStatusColors[
+						data.ticket.sla_status
+					] ?? 'bg-gray-100 text-gray-500'}"
+				>
+					{data.ticket.sla_status ?? '-'}
 				</span>
 			</div>
 			<div>

@@ -64,6 +64,12 @@
 		resolved: 'bg-gray-100 text-gray-700',
 		archived: 'bg-gray-100 text-gray-500'
 	};
+
+	const slaStatusColors: Record<string, string> = {
+		'on-track': 'bg-green-100 text-green-700',
+		'due-soon': 'bg-yellow-100 text-yellow-700',
+		overdue: 'bg-red-100 text-red-700'
+	};
 </script>
 
 <div>
@@ -134,7 +140,13 @@
 			</div>
 			<div>
 				<div class="mb-1 text-xs uppercase text-gray-400">SLA Status</div>
-				<div class="text-sm text-gray-700">{data.ticket.sla_status ?? '-'}</div>
+				<span
+					class="inline-block rounded-full px-2 py-0.5 text-xs font-medium {slaStatusColors[
+						data.ticket.sla_status
+					] ?? 'bg-gray-100 text-gray-500'}"
+				>
+					{data.ticket.sla_status ?? '-'}
+				</span>
 			</div>
 			<div>
 				<div class="mb-1 text-xs uppercase text-gray-400">Created</div>
