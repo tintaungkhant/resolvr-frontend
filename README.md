@@ -7,6 +7,7 @@ SvelteKit frontend for the Resolvr support ticket portal. Consumes the Laravel A
 - **Framework:** SvelteKit (Svelte 5 with runes)
 - **Styling:** Tailwind CSS v4
 - **Language:** TypeScript
+- **Backend:** Laravel (separate project — [`resolvr-api`](https://github.com/tintaungkhant/resolvr-api))
 - **Auth:** Cookie-based (httpOnly cookies storing Sanctum tokens)
 
 ## Setup
